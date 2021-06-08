@@ -1,15 +1,15 @@
 <template>
-  <HomeComponent />
+  <ChartsComponent />
 </template>
 
 <script>
 // Components
-import HomeComponent from '@/components/widgets/home/Home.vue';
+import ChartsComponent from '@/components/widgets/charts/Charts.vue';
 
 export default {
-  name: 'Home',
+  name: 'Charts',
   components: {
-    HomeComponent,
+    ChartsComponent,
   },
   setup() {
     return {};
