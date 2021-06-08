@@ -15,23 +15,20 @@
 </template>
 
 <script>
+// API
+import api from '@/api/index.js';
+
 // Components
 import Navigation from '@/components/layout/Navigation.vue';
+
+// Composition API
+import { reactive } from 'vue'
+
 
 export default {
   name: 'App',
   components: {
     Navigation,
-  },
-  data() {
-    return {
-      firstLoad: undefined,
-    };
-  },
-  watch: {
-    $route(to, from) {
-      this.firstLoad = from.name == null;
-    },
   },
 };
 </script>
