@@ -288,7 +288,7 @@ export default {
     })
     function getCurrencyData() {
       data.isLoading = true;
-      api.currencyData('https://fakerapi.it/api/v1/images?_width=380').then(() => {
+      api.currencyData('https://pokeapi.co/api/v2/pokemon/ditto').then(() => {
         store.commit('currency_data', data.currency);
         data.isLoading = false;
       })
@@ -377,7 +377,7 @@ export default {
   text-align: right;
   font-size: var(--font-size-base);
   margin: 0;
-  width: 200px;
+  max-width: 30vw;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -454,10 +454,26 @@ export default {
     box-sizing: border-box;
     margin: 0 3rem;
   }
+
+  .home--card-result-values h5 {
+    text-align: right;
+    font-size: var(--font-size-base);
+    margin: 0;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .home--card-result-values p {
+    text-align: right;
+    font-size: var(--font-size-xs);
+    margin: 0;
+  }
 }
 
 @media (min-width: 768px){
-    .home--card-result {
+  .home--card-result {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
