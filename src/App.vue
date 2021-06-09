@@ -5,7 +5,7 @@
 
     <!-- Pagination -->
     <router-view v-slot="{ Component }">
-      <transition name="fade" mode="in-out">
+      <transition name="fade">
         <component :is="Component" />
       </transition>
     </router-view>
@@ -40,18 +40,13 @@ export default {
   height: 100%;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
-}
-.fade-enter,
-.fade-leave-to  {
-  opacity: 0
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease-out;
 }
 
-.v-leave { opacity: 1; }
-.v-leave-active { transition: opacity 1s }
-.v-leave-to { opacity: 0; }
-.v-enter { opacity: 0; }
-.v-enter-active  { transition: opacity 1s }
-.v-enter-to { opacity: 1; }
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
