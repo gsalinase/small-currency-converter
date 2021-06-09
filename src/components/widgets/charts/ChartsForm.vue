@@ -2,11 +2,26 @@
   <UiCard class="charts--card">
     <div class="charts--container">
       <div class="charts--chart">
-        <UiLineChart
-          :labels="data.labels"
-          tooltipLabel="Price"
-          :values="data.values"
-        />
+        <!-- Loader -->
+        <div
+          v-if="data.isLoading"
+          class="charts-loader--container"
+          :class="{ 'charts--chart-container-show': data.isLoading }"
+        >
+          <UiLoader class="charts-loader" />
+        </div>
+        <div
+          v-else
+          class="charts--chart-container"
+          :class="{ 'charts--chart-container-show': !data.isLoading }"
+        >
+          <UiLineChart
+            v-if="data.values !== null"
+            :labels="data.labels"
+            tooltipLabel="Price"
+            :values="data.values"
+          />
+        </div>
       </div>
 
       <div class="charts--actions">
@@ -31,29 +46,35 @@
 </template>
 
 <script>
+// API
+import api from '@/api/index';
+
 // Components
 import UiButton from '@/components/ui/UiButton.vue';
 import UiCard from '@/components/ui/UiCard.vue';
+import UiLoader from '@/components/ui/UiLoader.vue';
 import UiLineChart from '@/components/ui/UiLineChart.vue';
 import UiSelect from '@/components/ui/UiSelect.vue';
-import { reactive, watch, ref } from 'vue';
+
+//Composition API
+import { useStore } from 'vuex'
+import { reactive, watch, ref, computed, onMounted } from 'vue';
 
 export default {
   components: {
     UiButton,
     UiCard,
+    UiLoader,
     UiLineChart,
     UiSelect
   },
   setup() {
+    const store = useStore()
     const currency = ref('EUR');
     const data = reactive({
-      labels: [
-        'January',
-        'February',
-        'March',
-      ],
-      values: [192, 323, 83],
+      isLoading: true,
+      labels: null,
+      values: null,
       options: ['EUR', 'USD', 'AUD', 'CAD', 'PLN', 'MXN'],
       buttons: [{
         title: '1 Day',
@@ -68,17 +89,30 @@ export default {
         period: '1Y', 
       }],
       selectedPeriod: '1D',
-
     });
+    const chartData = computed(() => store.state.chartData)
     watch(currency, (currentValue) => {
-      console.log(currentValue);
       data.selectedPeriod = '1D'
-      console.log(getTimeAgo(data.selectedPeriod ))
+      getChartData(currentValue, getTimeAgo(data.selectedPeriod))
     });
+    function getChartData(currency, period) {
+      data.isLoading = true;
+      const apiUrl = 'https://api.exchangeratesapi.io/v1'
+      const accessKey = 'a82fb17b0df6821f7e5a563c608e4a16'
+      const date = period
+      const base = currency
+      /* `${apiUrl}/${date}?access_key=${accessKey}&base=${base}` */
+      api.currencyData(`${apiUrl}/${date}?access_key=${accessKey}&base=${base}`).then((response) => {
+        store.commit('chart_data', response);
+        data.labels = Object.keys(chartData.value.rates)
+        data.values = Object.values(chartData.value.rates)
+        data.isLoading = false;
+      })
+    } 
+    getChartData(currency.value, getTimeAgo(data.selectedPeriod))
     function getSelectedPeriod(period){
       data.selectedPeriod = period
-      console.log(currency.value)
-      console.log(getTimeAgo(period))
+      getChartData(currency.value, getTimeAgo(period))
     }
     function getTimeAgo(type) {
       const date = new Date()
@@ -86,7 +120,14 @@ export default {
       if (type === '1Y') date.setMonth(date.getMonth() - 12);
       return date.toISOString().slice(0, 10);
     }
-    return { data, currency, getTimeAgo, getSelectedPeriod};
+    return { 
+      data, 
+      currency, 
+      chartData,
+      getTimeAgo, 
+      getSelectedPeriod, 
+      getChartData
+    };
   },
 };
 </script>
@@ -108,6 +149,27 @@ export default {
 
 .charts--button {
   margin-bottom: .5rem;
+}
+
+.charts-loader {
+  min-width: 130px;
+}
+
+.charts-loader--container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3.75rem;
+  opacity: 0;
+}
+
+.charts--chart-container {
+  opacity: 0;
+}
+
+.charts--chart-container-show {
+  opacity: 1;
+  transition: opacity .5s ease-in-out;
 }
 
 .charts--actions-select {

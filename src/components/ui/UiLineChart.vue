@@ -10,7 +10,11 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
+// Utils
+import utils from '@/utils/utils';
+
+// Composition API
+import { reactive, toRefs, watch } from 'vue';
 
 export default {
   name: 'UiLinechart',
@@ -115,15 +119,14 @@ export default {
           theme: 'dark',
           x: {
             show: true,
-            format: 'dd MMM',
-            formatter: undefined,
           },
           y: {
             show: false,
-            formatter: undefined,
+            formatter: function(value) {
+              return utils.toCurrencyFormat(value);
+            },
           },
           z: {
-            formatter: undefined,
             title: 'Size: ',
           },
           marker: {
@@ -142,7 +145,8 @@ export default {
           labels: {
             style: {
               colors: '#f0effb',
-            },
+              fontSize: '10px',
+            },      
           },
           axisTicks: {
             show: false,
@@ -155,9 +159,14 @@ export default {
           },
         },
         yaxis: {
+          tickAmount: 6,
+          forceNiceScale: true,
           labels: {
             style: {
               colors: '#f0effb',
+            },
+            formatter: function(value) {
+              return utils.toCurrencyFormat(value);
             },
           },
         },
@@ -166,6 +175,13 @@ export default {
         name: props.tooltipLabel,
         data: props.values,
       }],
+    });
+    let {values} = toRefs(props)
+    watch(values, (currentValue) => {
+      data.series = [{
+        name: props.tooltipLabel,
+        data: Object.values(currentValue)
+      }]
     });
 
     return { data };
@@ -176,5 +192,13 @@ export default {
 <style>
 .ui-linechart {
   min-height: 250px !important;
+}
+
+.apexcharts-xaxis-texts-g text[id^='SvgjsText'] {
+    display: none;
+}
+
+.apexcharts-xaxis-texts-g text[id^='SvgjsText']:nth-of-type(5n) {
+    display: revert;
 }
 </style>
