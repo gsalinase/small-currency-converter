@@ -4,11 +4,12 @@
     <div class="ui-input--container">
       <div v-if="prefix" class="ui-input--prefix">{{ prefix }}</div>
       <input
+        :autocomplete="autocomplete"
         class="ui-input--input"
         :id="id"
         :name="name"
         :placeholder="placeholder"
-        type="number"
+        :type="type"
         v-model="value"
       />
     </div>
@@ -19,12 +20,14 @@
 <script>
 export default {
   props: {
+    autocomplete: String,
     id: String,
     label: String,
     name: String,
     message: String,
     placeholder: String,
     prefix: String,
+    type: String,
     modelValue: String,
   },
   emits: ['update:modelValue'],
