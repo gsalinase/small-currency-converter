@@ -112,7 +112,7 @@ export default {
     })
     function getCurrencyData() {
       data.isLoading = true;
-      api.currencyData('http://api.exchangeratesapi.io/v1/latest?access_key=a82fb17b0df6821f7e5a563c608e4a16&format=1').then((response) => {
+      api.currencyData('https://api.exchangeratesapi.io/v1/latest?access_key=a82fb17b0df6821f7e5a563c608e4a16&format=1').then((response) => {
         store.commit('currency_data', response);
         data.isLoading = false;
       })
