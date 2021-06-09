@@ -112,7 +112,6 @@ export default {
   width: 20px;
   height: 20px;
   position: absolute;
-  top: 57%;
   right: 9px;
   background-image: url('../../assets/arrow.svg');
   background-repeat: no-repeat;
