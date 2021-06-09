@@ -1,7 +1,11 @@
 <template>
   <UiCard
     class="home--card"
-    :class="{ 'home--card--collapsed': data.collapsed }"
+    :class="{
+      'home--card-collapsed': data.collapsed,
+      'home--card-loader-small': data.isLoading,
+      'home--card-loader-full': !data.isLoading,
+    }"
   >
     <!-- Loader -->
     <div v-if="data.isLoading" class="home--card-loader"><UiLoader /></div>
@@ -13,12 +17,16 @@
           label="amount"
           id="home-amount"
           type="number"
+          autocomplete="off"
           :prefix="currency.base"
           v-model="form.amount"
         />
       </form>
 
-      <div class="home--card-result">
+      <div
+        class="home--card-result"
+        :class="{ 'home--card-opacity-1': form.amount.toString().length > 0 }"
+      >
         <div
           class="home--card-result-container"
           v-for="(rate, key) in currency.rates"
@@ -33,7 +41,11 @@
                 <img src="../../../assets/arrow-down.svg" alt="" />
               </div>
               <div class="home--card-result-values">
-                <h5>
+                <h5
+                  :title="`${key} ${toCurrencyFormat(
+                    convertCurrency(rate, form.amount)
+                  )}`"
+                >
                   {{ toCurrencyFormat(convertCurrency(rate, form.amount)) }}
                 </h5>
                 <p>
@@ -49,15 +61,14 @@
             </div>
           </UiCard>
         </div>
-      </div>
-
-      <div
-        class="home--card-see-more"
-        @click="data.collapsed = !data.collapsed"
-      >
-        <div class="home--card-see-more-click">
-          <img src="../../../assets/arrow.svg" alt="arrow see more" />
-          <small>See More</small>
+        <div
+          class="home--card-see-more"
+          @click="data.collapsed = !data.collapsed"
+        >
+          <div class="home--card-see-more-click">
+            <img src="../../../assets/arrow.svg" alt="arrow see more" />
+            <small> See {{ data.collapsed ? "Less" : "More" }} </small>
+          </div>
         </div>
       </div>
     </div>
@@ -273,6 +284,7 @@ export default {
       },
       collapsed: false,
       isLoading: false,
+      /* currency: {} */
     })
     function getCurrencyData() {
       data.isLoading = true;
@@ -281,7 +293,7 @@ export default {
         data.isLoading = false;
       })
 
-  /*     api.currencyData('http://api.exchangeratesapi.io/v1/latest?access_key=a82fb17b0df6821f7e5a563c608e4a16&format=1').then((response) => {
+      /* api.currencyData('http://api.exchangeratesapi.io/v1/latest?access_key=a82fb17b0df6821f7e5a563c608e4a16&format=1').then((response) => {
         store.commit('currency_data', response);
         data.isLoading = false;
       }) */
@@ -311,13 +323,20 @@ export default {
 .home--card {
   position: relative;
   box-sizing: border-box;
-  max-height: 350px;
-  transition: max-height 0.25s ease-out;
+  max-height: 290px;
+  max-width: 100%;
   overflow: hidden;
 }
 
-.home--card-loader {
-  height: 350px;
+.home--card-loader-small {
+  margin: 0 auto !important;
+  max-width: 300px;
+}
+
+.home--card-loader-full {
+  margin: 0 auto !important;
+  max-width: 100%;
+  transition: max-width .5s ease;
 }
 
 .home--card-button {
@@ -336,10 +355,11 @@ export default {
 }
 
 .home--card-result {
-  margin-top: 1rem;
-  margin-bottom: 3rem;
+  opacity: 0;
+  height: 0;
+  visibility: hidden;
   text-align: center;
-  height: 100%;
+  transition: all .25s ease-in-out;
 }
 
 .home--card-result-container {
@@ -357,6 +377,10 @@ export default {
   text-align: right;
   font-size: var(--font-size-base);
   margin: 0;
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .home--card-result-values p {
@@ -398,17 +422,31 @@ export default {
 
 .home--card-see-more-click img {
   transition: .5s;
+  transform: rotate(0deg);
   width: 30px;
 }
 
-.home--card--collapsed {
+.home--card-collapsed  {
   max-height: 100%;
-  transition: max-height 0.25s ease-in;
+  transition: max-height 0.25s ease-in-out;
 }
 
-.home--card--collapsed .home--card-see-more img {
+.home--card-collapsed .home--card-see-more  img {
   transition: .5s;
   transform: rotate(180deg);
+}
+
+.home--card-opacity-0 {
+  opacity: 0;
+}
+
+.home--card-opacity-1 {
+  opacity: 1;
+  height: 100%;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+  visibility: visible;
+  transition: opacity .25s ease-in-out;
 }
 
 @media (min-width: 567px){
