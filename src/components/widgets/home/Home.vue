@@ -61,7 +61,7 @@ export default {
 
 @media (min-width: 768px){
   .home--title {
-    padding-bottom: 1rem;
+    padding-bottom: 2rem;
     line-height: inherit;
     font-size: var(--font-size-xxxl);
   }
